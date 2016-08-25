@@ -1,5 +1,6 @@
 package com.project.sample.realmproject;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,20 +10,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.project.sample.realmproject.activities.UsersListActivity;
 import com.project.sample.realmproject.controller.UsersController;
 import com.project.sample.realmproject.controller.callbacks.SaveUserCallback;
 import com.project.sample.realmproject.controller.models.Users;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SaveUserCallback {
+import butterknife.BindDimen;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class MainActivity extends AppCompatActivity implements SaveUserCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private UsersController usersController;
 
-    private Button buttonSave;
-    private Button buttonShowUsers;
-    private EditText editName;
-    private EditText editGender;
+    @BindView(R.id.button_save) Button buttonSave;
+    @BindView(R.id.button_show_users) Button buttonShowUsers;
+    @BindView(R.id.edit_name) EditText editName;
+    @BindView(R.id.edit_gender) EditText editGender;
 
     private String name;
     private String gender;
@@ -31,41 +38,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         usersController = UsersController.with(this);
 
-        // Initialize Views
-        buttonSave = (Button) findViewById(R.id.button_save);
-        buttonShowUsers = (Button) findViewById(R.id.button_show_users);
-        editName = (EditText) findViewById(R.id.edit_name);
-        editGender = (EditText) findViewById(R.id.edit_gender);
-
-        buttonSave.setOnClickListener(this);
-        buttonShowUsers.setOnClickListener(this);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.button_save: {
-                name = editName.getText().toString();
-                gender = editGender.getText().toString();
+    @OnClick(R.id.button_save)
+    public void saveUsers() {
+        name = editName.getText().toString();
+        gender = editGender.getText().toString();
 
-                if(!TextUtils.isEmpty(name)) {
-                    Users users = new Users();
-                    users.setName(name);
-                    users.setGender(gender);
+        if(!TextUtils.isEmpty(name)) {
+            Users users = new Users();
+            users.setName(name);
+            users.setGender(gender);
 
-                    usersController.saveUser(users, this);
-                }
-
-                break;
-            }
-            case R.id.button_show_users: {
-                usersController.getAllUsers();
-                break;
-            }
+            usersController.saveUser(users, this);
         }
+    }
+
+    @OnClick(R.id.button_show_users)
+    public void showUsers() {
+        Intent intent = UsersListActivity.getStartIntent(this);
+        startActivity(intent);
     }
 
     @Override

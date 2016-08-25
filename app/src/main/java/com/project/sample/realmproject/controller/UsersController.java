@@ -8,6 +8,8 @@ import android.util.Log;
 import com.project.sample.realmproject.controller.callbacks.SaveUserCallback;
 import com.project.sample.realmproject.controller.models.Users;
 
+import java.util.List;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -81,10 +83,7 @@ public class UsersController {
         else return "";
     }
 
-    public void getAllUsers() {
-        RealmResults<Users> users = realm.where(Users.class)
-                                        .findAll();
-
-        Log.d(TAG, "Count => " + users.size());
+    public List<Users> getAllUsers() {
+        return realm.where(Users.class).findAll();
     }
 }
